@@ -201,7 +201,7 @@ function createEmailHTML(articleData) {
             font-weight: 700;
         }
         .concepts {
-            background: #fef9c3;
+            background: #fffde7;
             padding: 22px 18px 18px 18px;
             border-radius: 14px;
             border-left: 5px solid #fde047;
@@ -248,7 +248,7 @@ function createEmailHTML(articleData) {
 <body>
     <div class="container">
         <div class="header-card">
-            <div class="article-title">ES <b>Tu Artículo de Español</b></div>
+            <div class="article-title">🇪🇸🇲🇽 <b>Tu Artículo de Español</b></div>
             <div class="date">${articleData.date}</div>
         </div>
         <div class="topic">Tema: ${articleData.topic}</div>
