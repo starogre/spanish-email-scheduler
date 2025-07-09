@@ -147,65 +147,57 @@ function createEmailHTML(articleData) {
         }
         .container {
             background: #fff;
-            padding: 36px 32px 32px 32px;
+            padding: 0 0 32px 0;
             border-radius: 22px;
             box-shadow: 0 6px 32px 0 rgba(80, 80, 180, 0.10), 0 1.5px 6px 0 rgba(80, 80, 180, 0.08);
             margin-top: 40px;
             margin-bottom: 40px;
         }
-        .header {
-            text-align: center;
-            border-radius: 18px 18px 0 0;
+        .header-card {
             background: linear-gradient(90deg, ${theme.primaryColor} 0%, #a5b4fc 100%);
+            border-radius: 16px 16px 0 0;
             color: #fff;
-            padding: 32px 0 24px 0;
-            margin: -36px -32px 32px -32px;
+            padding: 32px 32px 20px 32px;
+            text-align: left;
             box-shadow: 0 2px 12px 0 rgba(80, 80, 180, 0.08);
             position: relative;
         }
-        .header h1 {
+        .header-card .article-title {
             font-family: 'Fredoka', 'Inter', 'Segoe UI', sans-serif;
-            font-size: 2.1rem;
+            font-size: 1.45rem;
             font-weight: 700;
             margin: 0 0 8px 0;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.2px;
         }
-        .header p {
-            font-size: 1.05rem;
-            color: #f3f4f6;
-            margin: 0 0 8px 0;
-        }
-        .date {
+        .header-card .date {
             color: #e0e7ff;
             font-size: 1rem;
-            margin-top: 4px;
+            margin-top: 2px;
         }
         .topic {
-            background: linear-gradient(90deg, ${theme.primaryColor} 0%, #a5b4fc 100%);
+            background: #22d3ee;
             color: #fff;
-            padding: 10px 22px;
-            border-radius: 18px;
-            display: inline-flex;
-            align-items: center;
-            font-size: 1rem;
+            padding: 7px 18px;
+            border-radius: 16px;
+            display: inline-block;
+            font-size: 0.98rem;
             font-weight: 600;
-            margin-bottom: 28px;
-            gap: 10px;
+            margin: 24px 0 0 32px;
             box-shadow: 0 2px 8px 0 rgba(80, 80, 180, 0.08);
         }
         .article {
-            background: #f8fafc;
-            padding: 26px 22px;
+            background: #fff;
+            padding: 28px 32px 18px 32px;
             border-radius: 14px;
-            border-left: 5px solid ${theme.primaryColor};
-            margin-bottom: 32px;
+            border: 1.5px solid #e0e7ff;
+            margin: 18px 24px 0 24px;
             box-shadow: 0 1.5px 6px 0 rgba(80, 80, 180, 0.06);
         }
         .article h2 {
             font-family: 'Fredoka', 'Inter', 'Segoe UI', sans-serif;
-            color: #4338ca;
+            color: #1e293b;
             margin-top: 0;
-            font-size: 1.35rem;
+            font-size: 1.15rem;
             font-weight: 700;
         }
         .concepts {
@@ -213,14 +205,14 @@ function createEmailHTML(articleData) {
             padding: 22px 18px 18px 18px;
             border-radius: 14px;
             border-left: 5px solid #fde047;
-            margin-bottom: 24px;
+            margin: 28px 24px 0 24px;
             box-shadow: 0 1.5px 6px 0 rgba(80, 80, 180, 0.04);
         }
         .concepts h3 {
             font-family: 'Fredoka', 'Inter', 'Segoe UI', sans-serif;
             color: #b45309;
             margin-top: 0;
-            font-size: 1.15rem;
+            font-size: 1.05rem;
             font-weight: 700;
             margin-bottom: 18px;
             display: flex;
@@ -251,38 +243,15 @@ function createEmailHTML(articleData) {
             padding: 2px 6px;
             border-radius: 4px;
         }
-        .action-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 16px;
-            margin-top: 18px;
-        }
-        .action-btn {
-            background: #fff;
-            color: #6366f1;
-            border: 2px solid #6366f1;
-            border-radius: 8px;
-            padding: 8px 18px;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            text-decoration: none;
-            transition: background 0.2s, color 0.2s;
-        }
-        .action-btn:hover {
-            background: #6366f1;
-            color: #fff;
-        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>Spanish Daily Newsletter</h1>
-            <p>Beautiful, engaging email template for Spanish language learning</p>
+        <div class="header-card">
+            <div class="article-title">ES <b>Tu Artículo de Español</b></div>
             <div class="date">${articleData.date}</div>
         </div>
-        <div class="topic">${theme.topicIcon} <span>Tema: ${articleData.topic}</span></div>
+        <div class="topic">Tema: ${articleData.topic}</div>
         <div class="article">
             <h2>${articleData.title}</h2>
             ${articleData.article.replace(/\n/g, '<br>')}
