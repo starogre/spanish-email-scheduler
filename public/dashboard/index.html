@@ -279,8 +279,10 @@
                 }
 
                 const data = await response.json();
-                
-                if (data.success) {
+                // Accept both {uid, email} and {success, user} formats
+                if (data.uid && data.email) {
+                    displayDashboard({ name: user.displayName || data.email, ...data });
+                } else if (data.success && data.user) {
                     displayDashboard(data.user);
                 } else {
                     throw new Error(data.error || 'Failed to load profile');
