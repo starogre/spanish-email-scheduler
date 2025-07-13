@@ -12,6 +12,11 @@ if (!admin.apps.length) {
 }
 
 export default async function handler(req, res) {
+  // Disable caching for this endpoint
+  res.setHeader('Cache-Control', 'no-store, max-age=0');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+
   const authHeader = req.headers.authorization || '';
   const match = authHeader.match(/^Bearer (.+)$/);
   if (!match) return res.status(401).json({ error: 'No token' });
