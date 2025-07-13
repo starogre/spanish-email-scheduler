@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Client Test</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .warning { background: #fff3cd; color: #856404; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Firebase Client Test</h1>
+        
+        <div id="status"></div>
+        
+        <h3>Firebase Configuration</h3>
+        <p>Update the firebaseConfig below with your actual values from Firebase Console:</p>
+        
+        <textarea id="config" rows="10" cols="80" style="width: 100%; font-family: monospace;">
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY_HERE",
+    authDomain: "spanish-daily-email.firebaseapp.com",
+    projectId: "spanish-daily-email",
+    storageBucket: "spanish-daily-email.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID_HERE",
+    appId: "YOUR_APP_ID_HERE"
+};
+        </textarea>
+        
+        <br><br>
+        <button onclick="testConfig()">Test Configuration</button>
+        <button onclick="testAuth()">Test Authentication</button>
+        <button onclick="clearStatus()">Clear Status</button>
+        
+        <h3>Test Login</h3>
+        <input type="email" id="email" placeholder="Email" value="jonshoob@gmail.com">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="testLogin()">Test Login</button>
+        
+        <h3>Instructions</h3>
+        <ol>
+            <li>Go to <a href="https://console.firebase.google.com/" target="_blank">Firebase Console</a></li>
+            <li>Select your project: <strong>spanish-daily-email</strong></li>
+            <li>Go to Project Settings (gear icon) > General</li>
+            <li>Scroll down to "Your apps" section</li>
+            <li>If no web app exists, click the web icon (</>) to add one</li>
+            <li>Copy the configuration values and update the config above</li>
+            <li>Click "Test Configuration" to verify</li>
+        </ol>
+    </div>
+
+    <script>
+        let firebaseApp = null;
+        let auth = null;
+        
+        function addStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+            statusDiv.appendChild(div);
+        }
+        
+        function clearStatus() {
+            document.getElementById('status').innerHTML = '';
+        }
+        
+        function testConfig() {
+            try {
+                clearStatus();
+                addStatus('Testing Firebase configuration...', 'info');
+                
+                // Get config from textarea
+                const configText = document.getElementById('config').value;
+                const configMatch = configText.match(/const firebaseConfig = ({[\s\S]*?});/);
+                
+                if (!configMatch) {
+                    addStatus('❌ Invalid configuration format', 'error');
+                    return;
+                }
+                
+                // Parse the config (this is a simple approach - in production you'd want to be more careful)
+                const configStr = configMatch[1].replace(/(\w+):/g, '"$1":').replace(/'/g, '"');
+                const firebaseConfig = JSON.parse(configStr);
+                
+                // Check for placeholder values
+                const placeholders = ['YOUR_API_KEY_HERE', 'YOUR_SENDER_ID_HERE', 'YOUR_APP_ID_HERE'];
+                const hasPlaceholders = placeholders.some(placeholder => 
+                    JSON.stringify(firebaseConfig).includes(placeholder)
+                );
+                
+                if (hasPlaceholders) {
+                    addStatus('⚠️ Configuration contains placeholder values', 'warning');
+                    addStatus('Please update with actual values from Firebase Console', 'warning');
+                    return;
+                }
+                
+                // Initialize Firebase
+                if (firebaseApp) {
+                    firebaseApp.delete();
+                }
+                
+                firebaseApp = firebase.initializeApp(firebaseConfig);
+                auth = firebase.auth();
+                
+                addStatus('✅ Firebase initialized successfully', 'success');
+                addStatus('✅ Configuration is valid', 'success');
+                
+            } catch (error) {
+                addStatus(`❌ Configuration error: ${error.message}`, 'error');
+            }
+        }
+        
+        function testAuth() {
+            if (!auth) {
+                addStatus('❌ Firebase not initialized. Test configuration first.', 'error');
+                return;
+            }
+            
+            addStatus('Testing Firebase Auth...', 'info');
+            
+            // Test if we can access auth
+            try {
+                const currentUser = auth.currentUser;
+                addStatus(`✅ Firebase Auth working. Current user: ${currentUser ? currentUser.email : 'None'}`, 'success');
+            } catch (error) {
+                addStatus(`❌ Firebase Auth error: ${error.message}`, 'error');
+            }
+        }
+        
+        function testLogin() {
+            if (!auth) {
+                addStatus('❌ Firebase not initialized. Test configuration first.', 'error');
+                return;
+            }
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (!email || !password) {
+                addStatus('❌ Please enter email and password', 'error');
+                return;
+            }
+            
+            addStatus(`Testing login with ${email}...`, 'info');
+            
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    addStatus(`✅ Login successful! User: ${user.email}`, 'success');
+                    addStatus(`User ID: ${user.uid}`, 'success');
+                })
+                .catch((error) => {
+                    addStatus(`❌ Login failed: ${error.code} - ${error.message}`, 'error');
+                });
+        }
+        
+        // Auto-test on page load
+        window.addEventListener('load', () => {
+            addStatus('Page loaded. Please update Firebase configuration and test.', 'info');
+        });
+    </script>
+</body>
+</html> 

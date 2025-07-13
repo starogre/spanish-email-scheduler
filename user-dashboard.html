@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard - Language Daily Email</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 1.5rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .logout-btn:hover {
+            background: #c82333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .welcome-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .welcome-card h2 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+
+        .welcome-card p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-card h3 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .feature-card p {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: transform 0.2s ease;
+        }
+
+        .feature-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .admin-only {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+
+        .error {
+            color: #dc3545;
+            text-align: center;
+            margin: 2rem 0;
+            font-size: 1.1rem;
+        }
+
+        .loading {
+            text-align: center;
+            margin: 2rem 0;
+            font-size: 1.1rem;
+            color: #666;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎯 Language Daily Email Dashboard</h1>
+        <div class="user-info">
+            <span class="user-name" id="userName">Loading...</span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="loading" class="loading">
+            Loading your dashboard...
+        </div>
+
+        <div id="error" class="error hidden">
+            Error loading dashboard. Please try again.
+        </div>
+
+        <div id="dashboard" class="hidden">
+            <div class="welcome-card">
+                <h2>Welcome back, <span id="welcomeName">User</span>!</h2>
+                <p>Manage your language learning experience and access your personalized features.</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>📧 Email Preferences</h3>
+                    <p>Manage your email subscription settings and preferences for daily Spanish articles.</p>
+                    <button class="feature-btn" onclick="alert('Email preferences feature coming soon!')">
+                        Manage Preferences
+                    </button>
+                </div>
+
+                <div class="feature-card">
+                    <h3>📚 Learning Progress</h3>
+                    <p>Track your Spanish learning progress and view your reading history.</p>
+                    <button class="feature-btn" onclick="alert('Learning progress feature coming soon!')">
+                        View Progress
+                    </button>
+                </div>
+
+                <div class="feature-card">
+                    <h3>⚙️ Account Settings</h3>
+                    <p>Update your profile information and account settings.</p>
+                    <button class="feature-btn" onclick="alert('Account settings feature coming soon!')">
+                        Account Settings
+                    </button>
+                </div>
+
+                <div class="feature-card admin-only hidden" id="adminCard">
+                    <h3>🔧 Admin Panel</h3>
+                    <p>Access the prompt manager and administrative tools.</p>
+                    <a href="/prompt-manager" class="feature-btn admin-only">
+                        Prompt Manager
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase SDK
+        let auth = null;
+
+        // Initialize Firebase with config from server
+        async function initializeFirebase() {
+            try {
+                const response = await fetch('/api/firebase-config');
+                const firebaseConfig = await response.json();
+                
+                // Initialize Firebase
+                firebase.initializeApp(firebaseConfig);
+                auth = firebase.auth();
+                
+                console.log('Firebase initialized successfully');
+                
+                // Check auth state
+                auth.onAuthStateChanged(function(user) {
+                    if (!user) {
+                        window.location.href = '/login';
+                    } else {
+                        checkAuth();
+                    }
+                });
+                
+            } catch (error) {
+                console.error('Failed to initialize Firebase:', error);
+                document.getElementById('error').classList.remove('hidden');
+                document.getElementById('loading').classList.add('hidden');
+            }
+        }
+
+        // Check authentication on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeFirebase();
+        });
+
+        async function checkAuth() {
+            // Check if user is authenticated with Firebase
+            const user = auth.currentUser;
+            
+            if (!user) {
+                window.location.href = '/login';
+                return;
+            }
+
+            try {
+                const token = await user.getIdToken();
+                const response = await fetch('/api/auth/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Authentication failed');
+                }
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayDashboard(data.user);
+                } else {
+                    throw new Error(data.error || 'Failed to load profile');
+                }
+
+            } catch (error) {
+                console.error('Auth error:', error);
+                // Don't immediately redirect on error, just show error message
+                document.getElementById('error').classList.remove('hidden');
+                document.getElementById('loading').classList.add('hidden');
+            }
+        }
+
+        function displayDashboard(user) {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            
+            // Update user information
+            document.getElementById('userName').textContent = user.name;
+            document.getElementById('welcomeName').textContent = user.name;
+            
+            // Show admin features if user is admin
+            if (user.role === 'admin') {
+                document.getElementById('adminCard').classList.remove('hidden');
+            }
+        }
+
+        function logout() {
+            if (auth) {
+                auth.signOut().then(() => {
+                    window.location.href = '/';
+                }).catch((error) => {
+                    console.error('Logout error:', error);
+                    window.location.href = '/';
+                });
+            } else {
+                window.location.href = '/';
+            }
+        }
+    </script>
+</body>
+</html> 

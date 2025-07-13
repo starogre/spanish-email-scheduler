@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spanish Email Prompt Manager</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <style>
         * {
             margin: 0;
@@ -405,10 +409,13 @@
             try {
                 showStatus('Loading current prompts...', 'info');
                 
+                const user = auth.currentUser;
+                const token = await user.getIdToken();
                 const response = await fetch(`${API_BASE}/api/manage-prompts`, {
                     method: 'GET',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
                     }
                 });
 
@@ -485,10 +492,13 @@
                     }
                 };
 
+                const user = auth.currentUser;
+                const token = await user.getIdToken();
                 const response = await fetch(`${API_BASE}/api/manage-prompts`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify({ prompts })
                 });
@@ -510,10 +520,83 @@
             }
         }
 
-        // Load prompts on page load
+        // Firebase SDK
+        let auth = null;
+
+        // Initialize Firebase with config from server
+        async function initializeFirebase() {
+            try {
+                const response = await fetch('/api/firebase-config');
+                const firebaseConfig = await response.json();
+                
+                // Initialize Firebase
+                firebase.initializeApp(firebaseConfig);
+                auth = firebase.auth();
+                
+                console.log('Firebase initialized successfully');
+                
+                // Check auth state
+                auth.onAuthStateChanged(function(user) {
+                    if (!user) {
+                        window.location.href = '/login';
+                    } else {
+                        checkAuth();
+                    }
+                });
+                
+            } catch (error) {
+                console.error('Failed to initialize Firebase:', error);
+                alert('Failed to initialize authentication. Please refresh the page.');
+            }
+        }
+
+        // Check authentication on page load
         document.addEventListener('DOMContentLoaded', () => {
-            loadPrompts();
+            initializeFirebase();
         });
+
+        async function checkAuth() {
+            // Check if user is authenticated with Firebase
+            const user = auth.currentUser;
+            
+            if (!user) {
+                window.location.href = '/login';
+                return;
+            }
+
+            try {
+                const token = await user.getIdToken();
+                const response = await fetch('/api/auth/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Authentication failed');
+                }
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    if (data.user.role !== 'admin') {
+                        alert('Access denied. Admin privileges required.');
+                        window.location.href = '/dashboard';
+                        return;
+                    }
+                    
+                    // Load prompts after authentication
+                    loadPrompts();
+                } else {
+                    throw new Error(data.error || 'Failed to load profile');
+                }
+
+            } catch (error) {
+                console.error('Auth error:', error);
+                alert('Authentication error. Please try logging in again.');
+                window.location.href = '/login';
+            }
+        }
     </script>
 </body>
 </html> 

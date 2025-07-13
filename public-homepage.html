@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Daily Email - Learn Spanish with Daily News</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 40px 0;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin: 20px auto;
+            max-width: 600px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .hero-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .hero-section h2 {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .hero-section p {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .feature {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .feature h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .feature p {
+            color: #666;
+        }
+
+        .signup-form {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input[type="email"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input[type="email"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            margin-top: 3px;
+        }
+
+        .checkbox-group label {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .checkbox-group a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .checkbox-group a:hover {
+            text-decoration: underline;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .confirmation {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .confirmation h3 {
+            font-size: 2rem;
+            color: #28a745;
+            margin-bottom: 20px;
+        }
+
+        .confirmation p {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .confirmation-icon {
+            font-size: 4rem;
+            color: #28a745;
+            margin-bottom: 20px;
+        }
+
+        .error {
+            color: #dc3545;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 40px 0;
+            color: white;
+            opacity: 0.8;
+        }
+
+        .admin-link {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: background 0.3s ease;
+        }
+
+        .admin-link:hover {
+            background: rgba(0,0,0,0.9);
+        }
+
+        .difficulty-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .difficulty-option {
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .difficulty-option:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .difficulty-option.selected {
+            border-color: #667eea;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .difficulty-option.selected .level {
+            color: #667eea;
+        }
+
+        .difficulty-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .difficulty-header input[type="radio"] {
+            margin-top: 0;
+        }
+
+        .difficulty-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .level {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .title {
+            font-size: 1.1rem;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .difficulty-description {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .difficulty-description ul {
+            list-style: none;
+            padding-left: 15px;
+        }
+
+        .difficulty-description li {
+            margin-bottom: 5px;
+            position: relative;
+        }
+
+        .difficulty-description li::before {
+            content: "•";
+            color: #667eea;
+            position: absolute;
+            left: -10px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .hero-section h2 {
+                font-size: 2rem;
+            }
+            
+            .main-content {
+                margin: 10px;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌍 Language Daily Email</h1>
+            <p>Learn Spanish with engaging daily news articles</p>
+        </div>
+
+        <div class="main-content">
+            <div class="hero-section">
+                <h2>Master Spanish Through Real News</h2>
+                <p>Get daily Spanish news articles written for language learners. Each email includes grammar explanations and vocabulary help to accelerate your learning.</p>
+            </div>
+
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">📰</div>
+                    <h3>Daily News</h3>
+                    <p>Fresh Spanish news articles written for A2 level learners</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">📚</div>
+                    <h3>Grammar Help</h3>
+                    <p>Clear explanations of grammar concepts found in each article</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Smart Learning</h3>
+                    <p>Progressive difficulty and topic rotation for optimal learning</p>
+                </div>
+            </div>
+
+            <div class="signup-form" id="signupForm">
+                <h3>Start Your Spanish Learning Journey</h3>
+                <p>Enter your email and choose your level to receive personalized Spanish learning emails!</p>
+                
+                <form id="emailForm">
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" placeholder="your.email@example.com" required>
+                        <div class="error" id="emailError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="difficulty">Choose Your Spanish Level</label>
+                        <div class="difficulty-selector">
+                            <div class="difficulty-option" data-level="A1">
+                                <div class="difficulty-header">
+                                    <input type="radio" id="A1" name="difficulty" value="A1" required>
+                                    <label for="A1" class="difficulty-label">
+                                        <span class="level">A1</span>
+                                        <span class="title">Beginner</span>
+                                    </label>
+                                </div>
+                                <div class="difficulty-description">
+                                    <p>Complete beginner. Learn basic greetings, numbers, and simple phrases.</p>
+                                    <ul>
+                                        <li>Basic greetings and introductions</li>
+                                        <li>Numbers 1-100</li>
+                                        <li>Simple present tense</li>
+                                        <li>Everyday vocabulary</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="difficulty-option" data-level="A2">
+                                <div class="difficulty-header">
+                                    <input type="radio" id="A2" name="difficulty" value="A2" required>
+                                    <label for="A2" class="difficulty-label">
+                                        <span class="level">A2</span>
+                                        <span class="title">Elementary</span>
+                                    </label>
+                                </div>
+                                <div class="difficulty-description">
+                                    <p>Can handle basic conversations and understand simple texts.</p>
+                                    <ul>
+                                        <li>Daily routines and activities</li>
+                                        <li>Past tense (preterite)</li>
+                                        <li>Family and relationships</li>
+                                        <li>Travel and directions</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="difficulty-option" data-level="B1">
+                                <div class="difficulty-header">
+                                    <input type="radio" id="B1" name="difficulty" value="B1" required>
+                                    <label for="B1" class="difficulty-label">
+                                        <span class="level">B1</span>
+                                        <span class="title">Intermediate</span>
+                                    </label>
+                                </div>
+                                <div class="difficulty-description">
+                                    <p>Can express opinions and handle most travel situations.</p>
+                                    <ul>
+                                        <li>Opinions and preferences</li>
+                                        <li>Future tense</li>
+                                        <li>Subjunctive mood basics</li>
+                                        <li>Work and education topics</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="difficulty-option" data-level="B2">
+                                <div class="difficulty-header">
+                                    <input type="radio" id="B2" name="difficulty" value="B2" required>
+                                    <label for="B2" class="difficulty-label">
+                                        <span class="level">B2</span>
+                                        <span class="title">Upper Intermediate</span>
+                                    </label>
+                                </div>
+                                <div class="difficulty-description">
+                                    <p>Can discuss complex topics and understand most native content.</p>
+                                    <ul>
+                                        <li>Complex grammar structures</li>
+                                        <li>Academic vocabulary</li>
+                                        <li>Abstract concepts</li>
+                                        <li>Professional communication</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="difficulty-option" data-level="C1">
+                                <div class="difficulty-header">
+                                    <input type="radio" id="C1" name="difficulty" value="C1" required>
+                                    <label for="C1" class="difficulty-label">
+                                        <span class="level">C1</span>
+                                        <span class="title">Advanced</span>
+                                    </label>
+                                </div>
+                                <div class="difficulty-description">
+                                    <p>Fluent speaker who can express ideas clearly and precisely.</p>
+                                    <ul>
+                                        <li>Nuanced expressions</li>
+                                        <li>Academic writing</li>
+                                        <li>Cultural references</li>
+                                        <li>Professional presentations</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="difficulty-option" data-level="C2">
+                                <div class="difficulty-header">
+                                    <input type="radio" id="C2" name="difficulty" value="C2" required>
+                                    <label for="C2" class="difficulty-label">
+                                        <span class="level">C2</span>
+                                        <span class="title">Mastery</span>
+                                    </label>
+                                </div>
+                                <div class="difficulty-description">
+                                    <p>Near-native level. Can understand and express everything.</p>
+                                    <ul>
+                                        <li>Native-level fluency</li>
+                                        <li>Literary analysis</li>
+                                        <li>Complex arguments</li>
+                                        <li>Cultural nuances</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="error" id="difficultyError"></div>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="privacy" name="privacy" required>
+                        <label for="privacy">
+                            I agree to receive daily Spanish learning emails and acknowledge the 
+                            <a href="/privacy-policy" target="_blank">Privacy Policy</a>
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn" id="submitBtn">Get My First Email</button>
+                </form>
+            </div>
+
+            <div class="confirmation" id="confirmation">
+                <div class="confirmation-icon">✅</div>
+                <h3>Check Your Email!</h3>
+                <p>We've sent you a confirmation email. Click the link in your email to start receiving your daily Spanish learning emails.</p>
+                <p><strong>Don't see the email?</strong> Check your spam folder or try signing up again.</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2025 Language Daily Email. All rights reserved.</p>
+        </div>
+    </div>
+
+                    <a href="/login" class="admin-link">User Login</a>
+
+    <script>
+        // Add visual feedback for difficulty selection
+        document.querySelectorAll('input[name="difficulty"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                // Remove selected class from all options
+                document.querySelectorAll('.difficulty-option').forEach(option => {
+                    option.classList.remove('selected');
+                });
+                
+                // Add selected class to chosen option
+                if (this.checked) {
+                    this.closest('.difficulty-option').classList.add('selected');
+                }
+            });
+        });
+
+        document.getElementById('emailForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const difficultyRadio = document.querySelector('input[name="difficulty"]:checked');
+            const difficulty = difficultyRadio ? difficultyRadio.value : null;
+            const privacy = document.getElementById('privacy').checked;
+            const emailError = document.getElementById('emailError');
+            const difficultyError = document.getElementById('difficultyError');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            // Reset errors
+            emailError.style.display = 'none';
+            difficultyError.style.display = 'none';
+            
+            // Validate email
+            if (!email || !email.includes('@')) {
+                emailError.textContent = 'Please enter a valid email address';
+                emailError.style.display = 'block';
+                return;
+            }
+            
+            // Validate difficulty selection
+            if (!difficulty) {
+                difficultyError.textContent = 'Please select your Spanish level';
+                difficultyError.style.display = 'block';
+                return;
+            }
+            
+            // Validate privacy checkbox
+            if (!privacy) {
+                emailError.textContent = 'Please agree to the privacy policy';
+                emailError.style.display = 'block';
+                return;
+            }
+            
+            // Disable button and show loading
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Signing up...';
+            
+            // Simulate API call (replace with actual API call later)
+            setTimeout(() => {
+                // Show confirmation
+                document.getElementById('signupForm').style.display = 'none';
+                document.getElementById('confirmation').style.display = 'block';
+                
+                // Reset form
+                document.getElementById('emailForm').reset();
+                document.querySelectorAll('.difficulty-option').forEach(option => {
+                    option.classList.remove('selected');
+                });
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Get My First Email';
+            }, 1500);
+        });
+    </script>
+</body>
+</html> 
