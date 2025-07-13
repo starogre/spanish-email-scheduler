@@ -11,6 +11,8 @@ if (!admin.apps.length) {
   });
 }
 
+const db = admin.firestore();
+
 export default async function handler(req, res) {
   // Disable caching for this endpoint
   res.setHeader('Cache-Control', 'no-store, max-age=0');
@@ -23,8 +25,12 @@ export default async function handler(req, res) {
 
   try {
     const decoded = await admin.auth().verifyIdToken(match[1]);
-    // Optionally, fetch more user info from Firestore here
-    res.status(200).json({ uid: decoded.uid, email: decoded.email });
+    // Fetch user role from Firestore
+    const userDoc = await db.collection('users').doc(decoded.uid).get();
+    const userData = userDoc.exists ? userDoc.data() : {};
+    const role = userData.role || 'user';
+
+    res.status(200).json({ uid: decoded.uid, email: decoded.email, role });
   } catch (e) {
     res.status(401).json({ error: 'Invalid token' });
   }
