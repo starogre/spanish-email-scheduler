@@ -1,7 +1,20 @@
 require('dotenv').config();
 const cron = require('node-cron');
+const express = require('express');
+const path = require('path');
+const fs = require('fs');
 const { generateSpanishArticle } = require('./services/openaiService');
 const { sendEmail } = require('./services/emailService');
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Middleware
+app.use(express.json());
+app.use(express.static('.'));
+
+// API Routes
+app.use('/api/manage-prompts', require('./api/manage-prompts'));
 
 console.log('🚀 Spanish Email Scheduler Starting...');
 
@@ -40,5 +53,21 @@ if (process.env.NODE_ENV === 'development') {
   console.log('🧪 Development mode: Sending test email...');
   sendDailySpanishArticle();
 }
+
+// Serve the prompt manager
+app.get('/prompt-manager', (req, res) => {
+  res.sendFile(path.join(__dirname, 'prompt-manager.html'));
+});
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({ status: 'healthy', timestamp: new Date().toISOString() });
+});
+
+// Start the server
+app.listen(PORT, () => {
+  console.log(`🌐 Server running on port ${PORT}`);
+  console.log(`📝 Prompt Manager available at: http://localhost:${PORT}/prompt-manager`);
+});
 
 console.log('🎯 Scheduler is running. Press Ctrl+C to stop.'); 

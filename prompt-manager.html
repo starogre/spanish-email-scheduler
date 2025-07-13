@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spanish Email Prompt Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            border: 1px solid #e1e5e9;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: #f8f9fa;
+            padding: 20px;
+            border-bottom: 1px solid #e1e5e9;
+            font-weight: 600;
+            font-size: 1.2em;
+            color: #495057;
+        }
+
+        .section-content {
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .topics-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .topic-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border: 1px solid #e1e5e9;
+        }
+
+        .topic-item input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 14px;
+        }
+
+        .topic-item input:focus {
+            outline: none;
+        }
+
+        .remove-topic {
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .add-topic {
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .status {
+            text-align: center;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .recent-topics {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .recent-topics h4 {
+            margin-bottom: 10px;
+            color: #495057;
+        }
+
+        .recent-topics ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .recent-topics li {
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+
+            .topics-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🇪🇸 Spanish Email Prompt Manager</h1>
+            <p>Manage your AI prompts dynamically without redeployment</p>
+        </div>
+
+        <div class="content">
+            <div id="status"></div>
+
+            <div class="section">
+                <div class="section-header">Article Generation Prompt</div>
+                <div class="section-content">
+                    <div class="form-group">
+                        <label for="articleSystem">System Message:</label>
+                        <textarea id="articleSystem" placeholder="Enter the system message for article generation..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="articleUser">User Message Template:</label>
+                        <textarea id="articleUser" placeholder="Enter the user message template. Use {topic} as placeholder for the selected topic..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">Grammar Concepts Prompt</div>
+                <div class="section-content">
+                    <div class="form-group">
+                        <label for="conceptsSystem">System Message:</label>
+                        <textarea id="conceptsSystem" placeholder="Enter the system message for grammar concepts generation..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="conceptsUser">User Message Template:</label>
+                        <textarea id="conceptsUser" placeholder="Enter the user message template. Use {article} as placeholder for the generated article..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">Topics & Rotation Rules</div>
+                <div class="section-content">
+                    <div class="form-group">
+                        <label>Available Topics:</label>
+                        <div id="topicsContainer" class="topics-container"></div>
+                        <button class="add-topic" onclick="addTopic()">+ Add Topic</button>
+                    </div>
+                    
+                    <div class="recent-topics">
+                        <h4>Recently Used Topics:</h4>
+                        <div id="recentTopics"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="buttons">
+                <button class="btn btn-secondary" onclick="loadPrompts()">Load Current Prompts</button>
+                <button class="btn btn-primary" onclick="savePrompts()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.className = `status ${type}`;
+            statusDiv.textContent = message;
+            setTimeout(() => {
+                statusDiv.textContent = '';
+                statusDiv.className = 'status';
+            }, 5000);
+        }
+
+        function addTopic() {
+            const container = document.getElementById('topicsContainer');
+            const topicDiv = document.createElement('div');
+            topicDiv.className = 'topic-item';
+            topicDiv.innerHTML = `
+                <input type="text" placeholder="Enter topic name..." onchange="updateTopics()">
+                <button class="remove-topic" onclick="this.parentElement.remove(); updateTopics()">×</button>
+            `;
+            container.appendChild(topicDiv);
+        }
+
+        function updateTopics() {
+            const topicInputs = document.querySelectorAll('#topicsContainer input');
+            const topics = Array.from(topicInputs).map(input => input.value.trim()).filter(topic => topic);
+            return topics;
+        }
+
+        function getTopicsFromInputs() {
+            return updateTopics();
+        }
+
+        function setTopicsToInputs(topics) {
+            const container = document.getElementById('topicsContainer');
+            container.innerHTML = '';
+            
+            topics.forEach(topic => {
+                const topicDiv = document.createElement('div');
+                topicDiv.className = 'topic-item';
+                topicDiv.innerHTML = `
+                    <input type="text" value="${topic}" onchange="updateTopics()">
+                    <button class="remove-topic" onclick="this.parentElement.remove(); updateTopics()">×</button>
+                `;
+                container.appendChild(topicDiv);
+            });
+        }
+
+        function updateRecentTopics(topics) {
+            const container = document.getElementById('recentTopics');
+            if (topics && topics.length > 0) {
+                container.innerHTML = `<ul>${topics.map(topic => `<li>${topic}</li>`).join('')}</ul>`;
+            } else {
+                container.innerHTML = '<p>No recent topics</p>';
+            }
+        }
+
+        async function loadPrompts() {
+            try {
+                showStatus('Loading current prompts...', 'info');
+                
+                const response = await fetch(`${API_BASE}/api/manage-prompts`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    const prompts = data.data.prompts;
+                    
+                    // Populate form fields
+                    document.getElementById('articleSystem').value = prompts.articlePrompt?.system || '';
+                    document.getElementById('articleUser').value = prompts.articlePrompt?.user || '';
+                    document.getElementById('conceptsSystem').value = prompts.conceptsPrompt?.system || '';
+                    document.getElementById('conceptsUser').value = prompts.conceptsPrompt?.user || '';
+                    
+                    // Set topics
+                    setTopicsToInputs(prompts.topics || []);
+                    
+                    // Update recent topics
+                    updateRecentTopics(data.data.recentTopics || []);
+                    
+                    showStatus('Prompts loaded successfully!', 'success');
+                } else {
+                    throw new Error(data.error || 'Failed to load prompts');
+                }
+            } catch (error) {
+                console.error('Error loading prompts:', error);
+                showStatus(`Error loading prompts: ${error.message}`, 'error');
+            }
+        }
+
+        async function savePrompts() {
+            try {
+                showStatus('Saving prompts...', 'info');
+                
+                const prompts = {
+                    articlePrompt: {
+                        system: document.getElementById('articleSystem').value,
+                        user: document.getElementById('articleUser').value
+                    },
+                    conceptsPrompt: {
+                        system: document.getElementById('conceptsSystem').value,
+                        user: document.getElementById('conceptsUser').value
+                    },
+                    topics: getTopicsFromInputs(),
+                    topicRotationRules: {
+                        maxConsecutiveTopics: 2,
+                        avoidRecentTopics: 5,
+                        topicCategories: {
+                            'tecnología y innovación': 'tech',
+                            'ciencia y descubrimientos': 'tech',
+                            'medio ambiente y sostenibilidad': 'nature',
+                            'naturaleza y animales': 'nature',
+                            'cultura y entretenimiento': 'culture',
+                            'arte y música': 'culture',
+                            'música y festivales': 'culture',
+                            'teatro y cine': 'culture',
+                            'literatura y libros': 'culture',
+                            'danza y baile': 'culture',
+                            'fotografía y arte visual': 'culture',
+                            'deportes y salud': 'lifestyle',
+                            'viajes y turismo': 'lifestyle',
+                            'moda y estilo de vida': 'lifestyle',
+                            'comida y gastronomía': 'lifestyle',
+                            'cocina y recetas': 'lifestyle',
+                            'educación y aprendizaje': 'education',
+                            'negocios y economía': 'business',
+                            'historia y tradiciones': 'history',
+                            'medicina y salud mental': 'health'
+                        }
+                    }
+                };
+
+                const response = await fetch(`${API_BASE}/api/manage-prompts`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ prompts })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showStatus('Prompts saved successfully!', 'success');
+                } else {
+                    throw new Error(data.error || 'Failed to save prompts');
+                }
+            } catch (error) {
+                console.error('Error saving prompts:', error);
+                showStatus(`Error saving prompts: ${error.message}`, 'error');
+            }
+        }
+
+        // Load prompts on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPrompts();
+        });
+    </script>
+</body>
+</html> 
