@@ -1,23 +1,11 @@
 const admin = require('firebase-admin');
 
-// Initialize Firebase Admin SDK
-// You'll need to add your Firebase service account key to environment variables
-let db;
-
-try {
+// Lazy-load Firebase - only get it when needed
+function getFirestore() {
   if (!admin.apps.length) {
-    admin.initializeApp({
-      credential: admin.credential.cert({
-        projectId: process.env.FIREBASE_PROJECT_ID,
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-      }),
-      databaseURL: process.env.FIREBASE_DATABASE_URL
-    });
+    throw new Error('Firebase not initialized');
   }
-  db = admin.firestore();
-} catch (error) {
-  console.error('Firebase initialization error:', error);
+  return admin.firestore();
 }
 
 // Default prompts that will be used if Firebase is not available
@@ -27,24 +15,36 @@ const defaultPrompts = {
     user: "Escribe un breve artículo de noticias falso en español (CEFR nivel A2 - principiante). Tema: {topic}. Máximo 150 palabras. Usa frases muy sencillas, vocabulario básico y presente simple. Incluye un título atractivo."
   },
   conceptsPrompt: {
-    system: "You are a Spanish teacher who explains basic A2-level grammatical concepts clearly and simply in English for English-speaking students learning Spanish.",
-    user: `From the following Spanish article (A2 level), extract 4 key basic grammar or vocabulary points that are appropriate for A2 learners, explain their function briefly in English, and provide a different example. Focus on simple concepts like basic verbs, common nouns, simple adjectives, and basic sentence structure.
+    system: "You are a Spanish teacher who explains basic A2-level grammatical concepts clearly and simply in English for English-speaking students learning Spanish. Focus on concepts that are actually present in the article and provide meaningful explanations.",
+    user: `From the following Spanish article (A2 level), extract 4 key basic grammar or vocabulary points that are actually present in the text. For each concept:
+
+1. Identify the specific Spanish word/phrase from the article
+2. Explain its function and meaning in English
+3. Provide a different example using the same concept
+4. Ensure the explanation is relevant to the article content
+
+Focus on:
+- Basic verbs and their conjugations
+- Common nouns and articles
+- Simple adjectives and their agreement
+- Basic sentence structure patterns
+- Common expressions or phrases
 
 Article:
 {article}
 
 Respond in this format:
-1. [Spanish Concept] - [Brief explanation in English]
-   Example: [Different example in Spanish]
+1. [Spanish Concept from article] - [Clear explanation of its function and meaning]
+   Example: [Different example using the same concept]
 
-2. [Spanish Concept] - [Brief explanation in English]
-   Example: [Different example in Spanish]
+2. [Spanish Concept from article] - [Clear explanation of its function and meaning]
+   Example: [Different example using the same concept]
 
-3. [Spanish Concept] - [Brief explanation in English]
-   Example: [Different example in Spanish]
+3. [Spanish Concept from article] - [Clear explanation of its function and meaning]
+   Example: [Different example using the same concept]
 
-4. [Spanish Concept] - [Brief explanation in English]
-   Example: [Different example in Spanish]`
+4. [Spanish Concept from article] - [Clear explanation of its function and meaning]
+   Example: [Different example using the same concept]`
   },
   topics: [
     'tecnología y innovación',
@@ -98,11 +98,7 @@ Respond in this format:
 
 async function getPrompts() {
   try {
-    if (!db) {
-      console.log('Firebase not available, using default prompts');
-      return defaultPrompts;
-    }
-
+    const db = getFirestore();
     const promptsDoc = await db.collection('config').doc('prompts').get();
     
     if (promptsDoc.exists) {
@@ -124,10 +120,7 @@ async function getPrompts() {
 
 async function updatePrompts(newPrompts) {
   try {
-    if (!db) {
-      throw new Error('Firebase not available');
-    }
-
+    const db = getFirestore();
     await db.collection('config').doc('prompts').set(newPrompts, { merge: true });
     return true;
   } catch (error) {
@@ -138,10 +131,7 @@ async function updatePrompts(newPrompts) {
 
 async function getRecentTopics(limit = 10) {
   try {
-    if (!db) {
-      return [];
-    }
-
+    const db = getFirestore();
     const topicsDoc = await db.collection('config').doc('recentTopics').get();
     if (topicsDoc.exists) {
       return topicsDoc.data().topics || [];
@@ -155,10 +145,7 @@ async function getRecentTopics(limit = 10) {
 
 async function addRecentTopic(topic) {
   try {
-    if (!db) {
-      return;
-    }
-
+    const db = getFirestore();
     const recentTopics = await getRecentTopics();
     const updatedTopics = [topic, ...recentTopics.slice(0, 9)]; // Keep last 10 topics
 

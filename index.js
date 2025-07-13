@@ -3,18 +3,43 @@ const cron = require('node-cron');
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
-const { generateSpanishArticle } = require('./services/openaiService');
-const { sendEmail } = require('./services/emailService');
+const admin = require('firebase-admin');
+
+// Initialize Firebase FIRST
+admin.initializeApp({
+  credential: admin.credential.cert({
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+    privateKey: process.env.FIREBASE_PRIVATE_KEY,
+  }),
+});
+
+const db = admin.firestore();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(express.json());
-app.use(express.static('.'));
 
-// API Routes
+// Logging middleware
+app.use((req, res, next) => {
+  console.log(`📥 ${req.method} ${req.path} - ${new Date().toISOString()}`);
+  next();
+});
+
+// API Routes (BEFORE static middleware)
 app.use('/api/manage-prompts', require('./api/manage-prompts'));
+
+// Simple test POST endpoint
+app.post('/test-post', (req, res) => {
+  console.log('📥 Test POST endpoint hit!');
+  console.log('Body:', req.body);
+  res.json({ success: true, message: 'Test POST works!', body: req.body });
+});
+
+// Static middleware (AFTER API routes)
+app.use(express.static('.'));
 
 console.log('🚀 Spanish Email Scheduler Starting...');
 
@@ -68,6 +93,12 @@ app.get('/health', (req, res) => {
 app.listen(PORT, () => {
   console.log(`🌐 Server running on port ${PORT}`);
   console.log(`📝 Prompt Manager available at: http://localhost:${PORT}/prompt-manager`);
+});
+
+// Add error handling middleware AFTER all routes
+app.use((error, req, res, next) => {
+  console.error('🚨 Server error:', error);
+  res.status(500).json({ success: false, error: error.message });
 });
 
 console.log('🎯 Scheduler is running. Press Ctrl+C to stop.'); 

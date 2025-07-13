@@ -1,0 +1,18 @@
+# Email Configuration
+MAILGUN_API_KEY=your-mailgun-api-key
+MAILGUN_DOMAIN=your-mailgun-domain
+TO_EMAIL=your-email@example.com
+FROM_EMAIL=noreply@your-domain.com
+
+# OpenAI Configuration
+OPENAI_API_KEY=your-openai-api-key
+
+# Scheduling Configuration
+SCHEDULE_TIME=09:00
+TIMEZONE=America/New_York
+NODE_ENV=development
+
+# Firebase Configuration (Add these after setting up Firebase)
+FIREBASE_PROJECT_ID=your-firebase-project-id
+FIREBASE_CLIENT_EMAIL=your-service-account-email@your-project.iam.gserviceaccount.com
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour-Private-Key-Here\n-----END PRIVATE KEY-----\n" 
