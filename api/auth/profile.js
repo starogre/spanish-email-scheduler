@@ -21,7 +21,7 @@ export default async function handler(req, res) {
 
   const authHeader = req.headers.authorization || '';
   const match = authHeader.match(/^Bearer (.+)$/);
-  if (!match) return res.status(401).json({ error: 'No token' });
+  if (!match) return res.status(401).json({ success: false, error: 'No token' });
 
   try {
     const decoded = await admin.auth().verifyIdToken(match[1]);
@@ -30,8 +30,8 @@ export default async function handler(req, res) {
     const userData = userDoc.exists ? userDoc.data() : {};
     const role = userData.role || 'user';
 
-    res.status(200).json({ uid: decoded.uid, email: decoded.email, role });
+    res.status(200).json({ success: true, user: { uid: decoded.uid, email: decoded.email, role } });
   } catch (e) {
-    res.status(401).json({ error: 'Invalid token' });
+    res.status(401).json({ success: false, error: 'Invalid token' });
   }
 } 
